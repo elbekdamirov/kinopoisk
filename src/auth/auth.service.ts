@@ -230,7 +230,7 @@ export class AuthService {
     const activationLink = uuid.v4();
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await this.mailService.sendActivationEmail(email, activationLink);
+    await this.mailService.sendActivationEmailToAdmin(email, activationLink);
 
     const user = await this.prismaService.admin.create({
       data: {

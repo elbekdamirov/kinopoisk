@@ -7,6 +7,4 @@ export class CreateAdminDto {
   confirm_password: string;
   avatar_url?: string;
   role?: Role;
-  is_active?: boolean;
-  is_approved?: boolean;
 }

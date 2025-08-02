@@ -22,4 +22,16 @@ export class MailService {
              <a href="${activateUrl}">ACTIVATE</a>`,
     });
   }
+
+  async sendActivationEmailToAdmin(email: string, link: string) {
+    const activateUrl = `${process.env.API_URL}/api/admin/auth/verify/${link}`;
+
+    await this.transporter.sendMail({
+      from: `"KinoPoisk" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Email verification",
+      html: `<p>Click the link below to activate your admin account:</p>
+             <a href="${activateUrl}">ACTIVATE</a>`,
+    });
+  }
 }
