@@ -22,31 +22,33 @@ enum Role {
 }
 
 model User {
-  id                   Int       @id @default(autoincrement())
-  full_name            String
-  email                String    @unique
-  password_hash        String
-  avatar_url           String?
-  is_active            Boolean   @default(false)
-  is_premium           Boolean   @default(false)
-  premium_expiration   DateTime?
-  activation_link      String?
-  refreshToken String?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  id                 Int       @id @default(autoincrement())
+  full_name          String
+  email              String    @unique
+  password_hash      String
+  avatar_url         String?
+  is_active          Boolean   @default(false)
+  is_premium         Boolean   @default(false)
+  premium_expiration DateTime?
+  activation_link    String?
+  refreshToken       String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@map("users")
 }
 
 model Admin {
-  id            Int     @id @default(autoincrement())
-  full_name     String
-  email         String  @unique
-  password_hash String
-  avatar_url    String?
-  role          Role    @default(admin)
-  is_active     Boolean @default(false)
-  is_approved   Boolean @default(false)
+  id              Int     @id @default(autoincrement())
+  full_name       String
+  email           String  @unique
+  password_hash   String
+  avatar_url      String?
+  activation_link String?
+  refreshToken    String?
+  role            Role    @default(admin)
+  is_active       Boolean @default(false)
+  is_approved     Boolean @default(false)
 
   createdAt DateTime @default(now())
 
