@@ -21,21 +21,67 @@ enum Role {
   moderator
 }
 
+enum PersonRole {
+  actor
+  director
+  producer
+  writer
+  editor
+  cinematographer
+  composer
+  production_designer
+  costume_designer
+  visual_effects_supervisor
+}
+
+enum Currency {
+  UZS
+  USD
+  EUR
+  RUB
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
+}
+
 model User {
-  id                 Int       @id @default(autoincrement())
+  id                 Int            @id @default(autoincrement())
   full_name          String
-  email              String    @unique
+  email              String         @unique
   password_hash      String
   avatar_url         String?
-  is_active          Boolean   @default(false)
-  is_premium         Boolean   @default(false)
+  is_active          Boolean        @default(false)
+  is_premium         Boolean        @default(false)
   premium_expiration DateTime?
   activation_link    String?
   refreshToken       String?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  notifications      Notification[]
+  bookmarks          Bookmark[]
+  ratings            Rating[]
+  comments           Comment[]
+  payments           Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  User      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notifications")
 }
 
 model Admin {
@@ -53,4 +99,203 @@ model Admin {
   createdAt DateTime @default(now())
 
   @@map("admins")
+}
+
+model Country {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  movies Movies[]
+
+  @@map("country")
+}
+
+model Category {
+  id        Int             @id @default(autoincrement())
+  name      String          @unique
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  movies    MovieCategory[]
+
+  @@map("category")
+}
+
+model Movies {
+  id          Int             @id @default(autoincrement())
+  title       String
+  description String?
+  releaseDate DateTime
+  duration    String
+  ageRating   String?
+  posterUrl   String?
+  trailerUrl  String?
+  is_premium  Boolean         @default(false)
+  categories  MovieCategory[]
+  movieFiles  MovieFile[]
+  genres      MovieGenre[]
+  persons     MoviePerson[]
+  bookmarks   Bookmark[]
+  ratings     Rating[]
+  comments    Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Countries Country @relation(fields: [countryId], references: [id])
+  countryId Int
+
+  @@map("movies")
+}
+
+model MovieCategory {
+  id         Int      @id @default(autoincrement())
+  categoryId Int
+  Category   Category @relation(fields: [categoryId], references: [id])
+
+  Movies   Movies @relation(fields: [moviesId], references: [id])
+  moviesId Int  
+
+  @@map("movie_category")
+}
+
+model MovieFile {
+  id        Int     @id @default(autoincrement())
+  fileUrl   String
+  fileType  String
+  fileSize  Int
+  quality   String
+  isPremium Boolean @default(false)
+  moviesId  Int
+  Movies    Movies  @relation(fields: [moviesId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("movie_file")
+}
+
+model Genres {
+  id     Int          @id @default(autoincrement())
+  name   String       @unique
+  movies MovieGenre[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("genres")
+}
+
+model MovieGenre {
+  id      Int    @id @default(autoincrement())
+  genreId Int
+  Genres  Genres @relation(fields: [genreId], references: [id])
+
+  Movies   Movies @relation(fields: [moviesId], references: [id])
+  moviesId Int
+
+  @@unique([genreId, moviesId])
+  @@map("movie_genre")
+}
+
+model Persons {
+  id        Int           @id @default(autoincrement())
+  full_name String        @unique
+  bio       String?
+  avatarUrl String?
+  movies    MoviePerson[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("persons")
+}
+
+model MoviePerson {
+  id       Int     @id @default(autoincrement())
+  personId Int
+  Persons  Persons @relation(fields: [personId], references: [id])
+
+  Movies   Movies? @relation(fields: [moviesId], references: [id])
+  moviesId Int?
+
+  role PersonRole
+  characterName String?
+
+  @@map("movie_person")
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  User      User     @relation(fields: [userId], references: [id])
+  moviesId  Int
+  Movies    Movies   @relation(fields: [moviesId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("bookmarks")
+}
+
+model Rating {
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  User     User      @relation(fields: [userId], references: [id])
+  moviesId Int
+  Movies   Movies    @relation(fields: [moviesId], references: [id])
+  rating   Float
+  commnets Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ratings")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  User      User     @relation(fields: [userId], references: [id])
+  moviesId  Int
+  Movies    Movies   @relation(fields: [moviesId], references: [id])
+  ratingId  Int
+  Rating    Rating  @relation(fields: [ratingId], references: [id])
+  message   String
+  likes     Int      @default(0)
+  dislikes  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("comments")
+}
+
+model Subscription {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  info      String
+  price     Float
+  duration  Int
+  is_active Boolean   @default(true)
+  payments  Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  userId         Int
+  User           User          @relation(fields: [userId], references: [id])
+  subscriptionId Int
+  Subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       Currency      @default(UZS)
+  status         PaymentStatus @default(pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
 }
