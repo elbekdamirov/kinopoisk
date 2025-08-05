@@ -22,5 +22,5 @@ export class CreateCommentDto {
   @IsInt({
     message: "ratingId butun son bo'lishi kerak (agar berilgan bo'lsa)",
   })
-  ratingId?: number;
+  ratingId: number;
 }

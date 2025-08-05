@@ -14,7 +14,7 @@ export class SubscriptionsService {
   async findAll() {
     return this.prisma.subscription.findMany({
       include: {
-        payments: true,
+        userSubscriptions: true,
       },
     });
   }
@@ -22,7 +22,7 @@ export class SubscriptionsService {
   async findOne(id: number) {
     const sub = await this.prisma.subscription.findUnique({
       where: { id },
-      include: { payments: true },
+      include: { userSubscriptions: true },
     });
 
     if (!sub) throw new NotFoundException("Subscription not found");

@@ -1,7 +1,10 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, UseGuards } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePaymentDto } from "./dto/create-payment.dto";
 import { UpdatePaymentDto } from "./dto/update-payment.dto";
+import { Roles } from "src/common/decorators/roles.decorator";
+import { AccessTokenAdminGuard } from "src/common/guards";
+import { RolesGuard } from "src/common/guards/role.guard";
 
 @Injectable()
 export class PaymentsService {
@@ -15,7 +18,7 @@ export class PaymentsService {
     return this.prisma.payment.findMany({
       include: {
         User: { select: { id: true, email: true } },
-        Subscription: { select: { id: true, name: true, price: true } },
+        UserSubscription: true,
       },
     });
   }
@@ -25,7 +28,7 @@ export class PaymentsService {
       where: { id },
       include: {
         User: { select: { id: true, email: true } },
-        Subscription: { select: { id: true, name: true, price: true } },
+        UserSubscription: true,
       },
     });
     if (!payment) throw new NotFoundException("Payment not found");
@@ -42,6 +45,8 @@ export class PaymentsService {
     });
   }
 
+  @UseGuards(AccessTokenAdminGuard, RolesGuard)
+  @Roles("moderator", "admin", "superadmin")
   async remove(id: number) {
     const exists = await this.prisma.payment.findUnique({ where: { id } });
     if (!exists) throw new NotFoundException("Payment not found");

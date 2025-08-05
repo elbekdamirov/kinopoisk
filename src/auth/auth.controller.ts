@@ -12,7 +12,7 @@ import {
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "src/users/dto/create-user.dto";
 import { SigninUserDto } from "src/users/dto/signin-user.dto";
-import { RefreshTokenGuard } from "src/common/guards";
+import { AccessTokenGuard, RefreshTokenGuard } from "src/common/guards";
 import { GetCurrentUser, GetCurrentUserId } from "src/common/decorators";
 import { ResponseFields } from "src/common/types";
 import { Response } from "express";
@@ -57,5 +57,5 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     return this.authService.signout(+userId, res);
-  } 
+  }
 }

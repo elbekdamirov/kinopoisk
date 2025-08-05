@@ -13,7 +13,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class CreateAdminDto {
   @ApiProperty({
     example: "Elbek Damirov",
-    description: "Adminning to‘liq ismi",
+    description: "Adminning to'liq ismi",
   })
   @IsString()
   @IsNotEmpty()
@@ -29,7 +29,7 @@ export class CreateAdminDto {
 
   @ApiProperty({
     example: "StrongP@ssw0rd",
-    description: "Parol (kamida 8ta belgidan iborat bo‘lishi kerak)",
+    description: "Parol (kamida 8ta belgidan iborat bo'lishi kerak)",
   })
   @IsString()
   @MinLength(6)

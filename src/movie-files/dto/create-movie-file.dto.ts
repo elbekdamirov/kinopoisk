@@ -20,7 +20,7 @@ export class CreateMovieFileDto {
   @IsString({ message: "fileType matn bo'lishi kerak" })
   fileType: string;
 
-  @ApiProperty({ example: 104857600, description: "Fayl o'lchami baytlarda" })
+  @ApiProperty({ example: 1024, description: "Fayl o'lchami mb larda" })
   @IsNumber({}, { message: "fileSize raqam bo'lishi kerak" })
   fileSize: number;
 

@@ -58,4 +58,9 @@ export class AdminAuthController {
   ) {
     return this.authService.signoutAdmin(+userId, res);
   }
+
+  @Get("approve/:activationLink")
+  async approve(@Param("activationLink") activationLink: string) {
+    return this.authService.approveAdmin(activationLink);
+  }
 }

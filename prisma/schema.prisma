@@ -49,21 +49,20 @@ enum PaymentStatus {
 }
 
 model User {
-  id                 Int            @id @default(autoincrement())
-  full_name          String
-  email              String         @unique
-  password_hash      String
-  avatar_url         String?
-  is_active          Boolean        @default(false)
-  is_premium         Boolean        @default(false)
-  premium_expiration DateTime?
-  activation_link    String?
-  refreshToken       String?
-  notifications      Notification[]
-  bookmarks          Bookmark[]
-  ratings            Rating[]
-  comments           Comment[]
-  payments           Payment[]
+  id                Int                @id @default(autoincrement())
+  full_name         String
+  email             String             @unique
+  password_hash     String
+  avatar_url        String?
+  is_active         Boolean            @default(false)
+  activation_link   String?
+  refreshToken      String?
+  notifications     Notification[]
+  bookmarks         Bookmark[]
+  ratings           Rating[]
+  comments          Comment[]
+  payments          Payment[]
+  userSubscriptions UserSubscription[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -91,6 +90,7 @@ model Admin {
   password_hash   String
   avatar_url      String?
   activation_link String?
+  approval_link   String?
   refreshToken    String?
   role            Role    @default(admin)
   is_active       Boolean @default(false)
@@ -155,7 +155,7 @@ model MovieCategory {
   Category   Category @relation(fields: [categoryId], references: [id])
 
   Movies   Movies @relation(fields: [moviesId], references: [id])
-  moviesId Int  
+  moviesId Int
 
   @@map("movie_category")
 }
@@ -220,7 +220,7 @@ model MoviePerson {
   Movies   Movies? @relation(fields: [moviesId], references: [id])
   moviesId Int?
 
-  role PersonRole
+  role          PersonRole
   characterName String?
 
   @@map("movie_person")
@@ -234,6 +234,7 @@ model Bookmark {
   Movies    Movies   @relation(fields: [moviesId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@map("bookmarks")
 }
 
@@ -259,7 +260,7 @@ model Comment {
   moviesId  Int
   Movies    Movies   @relation(fields: [moviesId], references: [id])
   ratingId  Int
-  Rating    Rating  @relation(fields: [ratingId], references: [id])
+  Rating    Rating   @relation(fields: [ratingId], references: [id])
   message   String
   likes     Int      @default(0)
   dislikes  Int      @default(0)
@@ -270,13 +271,13 @@ model Comment {
 }
 
 model Subscription {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  info      String
-  price     Float
-  duration  Int
-  is_active Boolean   @default(true)
-  payments  Payment[]
+  id                Int                @id @default(autoincrement())
+  name              String             @unique
+  info              String
+  price             Float
+  duration          Int
+  is_active         Boolean            @default(true)
+  userSubscriptions UserSubscription[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -284,15 +285,32 @@ model Subscription {
   @@map("subscriptions")
 }
 
-model Payment {
-  id             Int           @id @default(autoincrement())
+model UserSubscription {
+  id             Int          @id @default(autoincrement())
   userId         Int
-  User           User          @relation(fields: [userId], references: [id])
+  User           User         @relation(fields: [userId], references: [id])
   subscriptionId Int
-  Subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
-  amount         Decimal       @db.Decimal(10, 2)
-  currency       Currency      @default(UZS)
-  status         PaymentStatus @default(pending)
+  Subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  startDate      DateTime     @default(now())
+  endDate        DateTime
+  isActive       Boolean      @default(true)
+  payments       Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_subscriptions")
+}
+
+model Payment {
+  id                 Int               @id @default(autoincrement())
+  userId             Int
+  User               User              @relation(fields: [userId], references: [id])
+  userSubscriptionId Int?
+  UserSubscription   UserSubscription? @relation(fields: [userSubscriptionId], references: [id])
+  amount             Decimal           @db.Decimal(10, 2)
+  currency           Currency          @default(UZS)
+  status             PaymentStatus     @default(pending)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

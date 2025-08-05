@@ -1,45 +1,42 @@
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumberString,
-  IsOptional,
-  IsPositive,
-  IsInt,
-} from "class-validator";
+import { IsInt, IsNumberString, IsOptional, IsEnum } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Currency, PaymentStatus } from "generated/prisma";
 
 export class CreatePaymentDto {
   @ApiProperty({ example: 1, description: "Foydalanuvchi ID raqami" })
-  @IsInt({ message: "userId butun son bo'lishi kerak" })
+  @IsInt()
   userId: number;
 
-  @ApiProperty({ example: 3, description: "Obuna (subscription) ID raqami" })
-  @IsInt({ message: "subscriptionId butun son bo'lishi kerak" })
-  subscriptionId: number;
+  @ApiPropertyOptional({
+    example: 2,
+    description: "UserSubscription ID raqami (majburiy emas)",
+  })
+  @IsOptional()
+  @IsInt()
+  userSubscriptionId?: number;
 
   @ApiProperty({
     example: "20000.00",
-    description: 'To`lov summasi, string formatda (masalan: "20000.00")',
+    description: "To'lov summasi (string sifatida, Decimal uchun)",
   })
-  @IsNumberString({}, { message: "amount raqamli string bo'lishi kerak" })
+  @IsNumberString()
   amount: string;
 
   @ApiPropertyOptional({
     enum: Currency,
     example: Currency.UZS,
-    description: "Valyuta turi",
+    description: "Valyuta (UZS, USD...)",
   })
   @IsOptional()
-  @IsEnum(Currency, { message: "currency noto'g'ri qiymatga ega" })
+  @IsEnum(Currency)
   currency?: Currency;
 
   @ApiPropertyOptional({
     enum: PaymentStatus,
     example: PaymentStatus.pending,
-    description: "To‘lov holati",
+    description: "To'lov holati (pending, completed...)",
   })
   @IsOptional()
-  @IsEnum(PaymentStatus, { message: "status noto'g'ri qiymatga ega" })
+  @IsEnum(PaymentStatus)
   status?: PaymentStatus;
 }

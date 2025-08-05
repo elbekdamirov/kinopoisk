@@ -20,6 +20,7 @@ import { RatingsModule } from './ratings/ratings.module';
 import { CommentsModule } from './comments/comments.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { PaymentsModule } from './payments/payments.module';
+import { UserSubscriptionModule } from './user-subscription/user-subscription.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { PaymentsModule } from './payments/payments.module';
     CommentsModule,
     SubscriptionsModule,
     PaymentsModule,
+    UserSubscriptionModule,
   ],
   controllers: [],
   providers: [],

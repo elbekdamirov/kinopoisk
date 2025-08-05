@@ -228,6 +228,7 @@ export class AuthService {
       throw new BadRequestException("Passwords do not match");
     }
     const activationLink = uuid.v4();
+    const approvalLink = uuid.v4();
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await this.mailService.sendActivationEmailToAdmin(email, activationLink);
@@ -240,8 +241,11 @@ export class AuthService {
         role: role,
         password_hash: hashedPassword,
         activation_link: activationLink,
+        approval_link: approvalLink,
       },
     });
+
+    await this.mailService.sendApprovalLinkToSuperadmin(user, approvalLink);
 
     return {
       message: "Check your email for activation link",
@@ -281,6 +285,12 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
       throw new BadRequestException("Incorrect password");
+    }
+
+    if (!user.is_approved) {
+      throw new ForbiddenException(
+        "Admin hali superadmin tomonidan tasdiqlanmagan."
+      );
     }
 
     if (!user.is_active) {
@@ -356,5 +366,24 @@ export class AuthService {
     if (!user) throw new ForbiddenException("Access denied");
     res.clearCookie("refreshToken");
     return { message: "User signed out" };
+  }
+
+  async approveAdmin(activationLink: string) {
+    const user = await this.prismaService.admin.findFirst({
+      where: { approval_link: activationLink },
+    });
+    if (!user) {
+      throw new BadRequestException("Invalid activation link");
+    }
+
+    await this.prismaService.admin.update({
+      where: { id: user.id },
+      data: { is_approved: true, approval_link: null },
+    });
+
+    return {
+      message: "Account activated successfully",
+      email: user.email,
+    };
   }
 }
