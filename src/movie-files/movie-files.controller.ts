@@ -12,8 +12,15 @@ import { CreateMovieFileDto } from "./dto/create-movie-file.dto";
 import { UpdateMovieFileDto } from "./dto/update-movie-file.dto";
 import { MovieFileService } from "./movie-files.service";
 import { Roles } from "src/common/decorators/roles.decorator";
-import { AccessTokenAdminGuard } from "src/common/guards";
+import {
+  AccessTokenAdminGuard,
+  AccessTokenGuard,
+  RefreshTokenAdminGuard,
+  RefreshTokenGuard,
+} from "src/common/guards";
 import { RolesGuard } from "src/common/guards/role.guard";
+import { PremiumGuard } from "src/common/guards/is-premium-user.guard";
+import { Public } from "src/common/decorators";
 
 @Controller("movie-files")
 export class MovieFilesController {
@@ -26,11 +33,13 @@ export class MovieFilesController {
     return this.movieFilesService.create(createMovieFileDto);
   }
 
+  @UseGuards(RefreshTokenGuard, PremiumGuard)
   @Get()
   findAll() {
     return this.movieFilesService.findAll();
   }
 
+  @UseGuards(RefreshTokenGuard, PremiumGuard)
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.movieFilesService.findOne(+id);

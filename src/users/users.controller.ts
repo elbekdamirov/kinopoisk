@@ -43,6 +43,7 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto);
   }
 
+  @UseGuards(RefreshTokenGuard)
   @Delete()
   remove(@GetCurrentUserId() id: number) {
     return this.usersService.remove(+id);

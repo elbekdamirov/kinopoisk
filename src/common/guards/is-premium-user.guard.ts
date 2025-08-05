@@ -1,43 +1,48 @@
-// // guards/is-premium.guard.ts
-// import {
-//   CanActivate,
-//   ExecutionContext,
-//   ForbiddenException,
-//   Injectable,
-// } from "@nestjs/common";
-// import { PrismaService } from "src/prisma/prisma.service";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  ForbiddenException,
+} from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
 
-// @Injectable()
-// export class IsPremiumGuard implements CanActivate {
-//   constructor(private readonly prisma: PrismaService) {}
+@Injectable()
+export class PremiumGuard implements CanActivate {
+  constructor(private readonly prisma: PrismaService) {}
 
-//   async canActivate(context: ExecutionContext): Promise<boolean> {
-//     const req = context.switchToHttp().getRequest();
-//     const userId = req.user?.id;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
 
-//     if (!userId) {
-//       throw new ForbiddenException("Foydalanuvchi aniqlanmadi");
-//     }
+    if (!user || !user.id) {
+      throw new ForbiddenException("User not authenticated");
+    }
 
-//     const activePayment = await this.prisma.payment.findFirst({
-//       where: {
-//         userId,
-//         status: "success",
-//         Subscription: {
-//           : {
-//             gt: new Date(),
-//           },
-//         },
-//       },
-//       include: {
-//         Subscription: true,
-//       },
-//     });
+    if (
+      user.role &&
+      ["admin", "superadmin", "content_manager", "moderator"].includes(
+        user.role
+      )
+    ) {
+      return true;
+    }
 
-//     if (!activePayment) {
-//       throw new ForbiddenException("Premium obuna talab qilinadi");
-//     }
+    const activeSubscription = await this.prisma.userSubscription.findFirst({
+      where: {
+        userId: user.id,
+        isActive: true,
+        endDate: {
+          gte: new Date(),
+        },
+      },
+    });
 
-//     return true;
-//   }
-// }
+    if (!activeSubscription) {
+      throw new ForbiddenException(
+        "Bu faqat premium foydalanuvchilar uchun mavjud"
+      );
+    }
+
+    return true;
+  }
+}

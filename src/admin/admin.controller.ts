@@ -6,10 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from "@nestjs/common";
 import { CreateAdminDto } from "./dto/create-admin.dto";
 import { UpdateAdminDto } from "./dto/update-admin.dto";
 import { AdminsService } from "./admin.service";
+import { GetCurrentUserId } from "src/common/decorators";
+import { RefreshTokenAdminGuard } from "src/common/guards";
 
 @Controller("admin")
 export class AdminController {
@@ -30,13 +33,18 @@ export class AdminController {
     return this.adminService.findOne(+id);
   }
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateAdminDto: UpdateAdminDto) {
+  @UseGuards(RefreshTokenAdminGuard)
+  @Patch()
+  update(
+    @GetCurrentUserId() id: number,
+    @Body() updateAdminDto: UpdateAdminDto
+  ) {
     return this.adminService.update(+id, updateAdminDto);
   }
 
-  @Delete(":id")
-  remove(@Param("id") id: string) {
+  @UseGuards(RefreshTokenAdminGuard)
+  @Delete()
+  remove(@GetCurrentUserId() id: number) {
     return this.adminService.remove(+id);
   }
 }

@@ -13,9 +13,19 @@ export class UserSubscriptionService {
     });
   }
 
+  async findAll() {
+    return this.prisma.userSubscription.findMany({
+      include: {
+        User: true,
+        Subscription: true,
+        payments: true,
+      },
+    });
+  }
+
   async findOne(id: number) {
-    const subscription = await this.prisma.userSubscription.findUnique({
-      where: { id },
+    const subscription = await this.prisma.userSubscription.findFirst({
+      where: { userId: id },
       include: {
         User: true,
         Subscription: true,
@@ -28,5 +38,32 @@ export class UserSubscriptionService {
     }
 
     return subscription;
+  }
+
+  async update(id: number, dto: UpdateUserSubscriptionDto) {
+    const existing = await this.prisma.userSubscription.findUnique({
+      where: { id },
+    });
+    if (!existing) {
+      throw new NotFoundException(`UserSubscription with ID ${id} not found`);
+    }
+
+    return this.prisma.userSubscription.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
+  async remove(id: number) {
+    const existing = await this.prisma.userSubscription.findUnique({
+      where: { id },
+    });
+    if (!existing) {
+      throw new NotFoundException(`UserSubscription with ID ${id} not found`);
+    }
+
+    return this.prisma.userSubscription.delete({
+      where: { id },
+    });
   }
 }
