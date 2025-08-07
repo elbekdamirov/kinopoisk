@@ -67,4 +67,25 @@ export class MoviesService {
 
     return this.prisma.movies.delete({ where: { id } });
   }
+
+  async searchByTitle(query: string) {
+    return this.prisma.movies.findMany({
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      include: {
+        categories: true,
+        movieFiles: true,
+        genres: true,
+        persons: true,
+        bookmarks: true,
+        ratings: true,
+        comments: true,
+        Countries: true,
+      },
+    });
+  }
 }

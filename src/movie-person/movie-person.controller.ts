@@ -14,7 +14,9 @@ import { UpdateMoviePersonDto } from "./dto/update-movie-person.dto";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { AccessTokenAdminGuard } from "src/common/guards";
 import { RolesGuard } from "src/common/guards/role.guard";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth("token")
 @Controller("movie-person")
 export class MoviePersonController {
   constructor(private readonly moviePersonService: MoviePersonService) {}

@@ -14,7 +14,9 @@ import { MovieGenreService } from "./movie-genres.service";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { AccessTokenAdminGuard } from "src/common/guards";
 import { RolesGuard } from "src/common/guards/role.guard";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth("token")
 @Controller("movie-genres")
 export class MovieGenresController {
   constructor(private readonly movieGenresService: MovieGenreService) {}

@@ -24,6 +24,17 @@ async function start() {
     .setDescription("API hujjatlari")
     .setVersion("1.0")
     .addCookieAuth("refreshToken")
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        name: "JWT",
+        description: "Enter JWT token",
+        in: "header",
+      },
+      "token"
+    )
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("api/docs", app, document);

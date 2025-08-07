@@ -14,7 +14,9 @@ import { UpdatePersonDto } from "./dto/update-person.dto";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { AccessTokenAdminGuard } from "src/common/guards";
 import { RolesGuard } from "src/common/guards/role.guard";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth("token")
 @Controller("persons")
 export class PersonsController {
   constructor(private readonly personsService: PersonsService) {}

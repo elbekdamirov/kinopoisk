@@ -14,7 +14,9 @@ import { UpdateCountryDto } from "./dto/update-country.dto";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { AccessTokenAdminGuard } from "src/common/guards";
 import { RolesGuard } from "src/common/guards/role.guard";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth("token")
 @Controller("countries")
 export class CountriesController {
   constructor(private readonly countriesService: CountriesService) {}

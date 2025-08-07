@@ -14,7 +14,9 @@ import { UpdateSubscriptionDto } from "./dto/update-subscription.dto";
 import { AccessTokenAdminGuard } from "src/common/guards";
 import { RolesGuard } from "src/common/guards/role.guard";
 import { Roles } from "src/common/decorators/roles.decorator";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth("token")
 @Controller("subscriptions")
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}

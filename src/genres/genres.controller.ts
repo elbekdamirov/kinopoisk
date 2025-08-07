@@ -14,7 +14,9 @@ import { UpdateGenreDto } from "./dto/update-genre.dto";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { AccessTokenAdminGuard } from "src/common/guards";
 import { RolesGuard } from "src/common/guards/role.guard";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth("token")
 @Controller("genres")
 export class GenresController {
   constructor(private readonly genresService: GenresService) {}

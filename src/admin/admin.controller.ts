@@ -13,7 +13,9 @@ import { UpdateAdminDto } from "./dto/update-admin.dto";
 import { AdminsService } from "./admin.service";
 import { GetCurrentUserId } from "src/common/decorators";
 import { RefreshTokenAdminGuard } from "src/common/guards";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth("token")
 @Controller("admin")
 export class AdminController {
   constructor(private readonly adminService: AdminsService) {}

@@ -15,7 +15,9 @@ import { Roles } from "src/common/decorators/roles.decorator";
 import { AccessTokenAdminGuard, RefreshTokenGuard } from "src/common/guards";
 import { RolesGuard } from "src/common/guards/role.guard";
 import { GetCurrentUserId } from "src/common/decorators";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth()
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

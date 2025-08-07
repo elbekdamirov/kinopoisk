@@ -21,7 +21,9 @@ import {
 import { RolesGuard } from "src/common/guards/role.guard";
 import { PremiumGuard } from "src/common/guards/is-premium-user.guard";
 import { Public } from "src/common/decorators";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth("token")
 @Controller("movie-files")
 export class MovieFilesController {
   constructor(private readonly movieFilesService: MovieFileService) {}
